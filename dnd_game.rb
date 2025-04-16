@@ -1,6 +1,6 @@
 class DnDGame
   SCENARIOS = [
-    "You encouter a goblin in the dark forest. What do you do?",
+    "You encounter a goblin in the dark forest. What do you do?",
     "A mysterious stranger offers you a quest. How do you respond?",
     "You find a treasure chest! Do you open it?",
     "The bridge ahead looks rickety. What's your move?",
@@ -8,20 +8,29 @@ class DnDGame
   ]
 
   ACTIONS = {
-    "fight" => { descrition: "Engage in combat", difficulty: 15 },
-    "talk" => { descrition: "Attempt diplomacy", difficulty: 10 },
-    "flee" => { descrition: "Run away", difficulty: 5 },
-    "flirt" => { descrition: "Try to charm", difficulty: 18 },
-    "inspect" => { descrition: "Examine carefully", difficulty: 12 },
+    "fight" => { description: "Engage in combat", difficulty: 15 },
+    "talk" => { description: "Attempt diplomacy", difficulty: 10 },
+    "flee" => { description: "Run away", difficulty: 5 },
+    "flirt" => { description: "Try to charm", difficulty: 18 },
+    "inspect" => { description: "Examine carefully", difficulty: 12 },
   }
 
   def initialize
     @scenario = SCENARIOS.sample
     @health = 10
     @alive = true
+    @used_scenarios = []
+    new_scenario
   end
 
   def play
+    while @alive
+      play_round
+      continue if @alive
+    end
+  end
+
+  def play_round
     puts "\n=== D&D Terminal Adventure ===\n\n"
     puts @scenario
     puts "\nAvailable actions:"
@@ -51,7 +60,26 @@ class DnDGame
     end
 
     check_health
-    play if @alive
+  end
+
+  def continue
+    if @alive
+      puts "\nPress enter to continue your adventure.."
+      gets
+      new_scenario
+    end
+  end
+
+  def new_scenario
+    available_acenarios = SCENARIOS - @used_scenarios
+
+    if available_acenarios.empty?
+      @used_scenarios = []
+      available_acenarios = SCENARIOS
+    end
+
+    @scenario = available_acenarios.sample
+    @used_scenarios << @scenario
   end
 
   def success_outcome(action)
